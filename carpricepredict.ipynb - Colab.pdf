@@ -1,0 +1,479 @@
+import kagglehub
+# Download latest version
+path
+=
+kagglehub.dataset_download("brsahan/extensive-used-car-price-for-predictive-modeling")
+print("Path to dataset files:", path)
+Path to dataset files: /kaggle/input/extensive-used-car-price-for-predictive-modeling
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from google.colab import files
+# Upload file
+uploaded
+=
+files.upload()
+#
+df
+======
+1. Load Data
+======
+=
+pd.read_csv('car_dataset.csv') print(f"📊 Dataset loaded: {df.shape[0]} rows
+# Ganti dengan nama file kamu
+×
+{df.shape[1]} columns")
+#
+======
+2. Basic Info
+print("\n📋 Basic Info:")
+print(df.info())
+======
+#
+======
+3. Missing Values & Duplicate Rows Check
+print("\n🔍 Missing Values:")
+missing
+=
+df.isnull().sum()
+print(missing[missing > 0])
+======
+print("\n🔍 Duplicate Rows:")
+duplicate
+=
+df.duplicated().sum()
+print(duplicate)
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+print("\n📈 Skewness Check:")
+skewed_features
+=
+print(skewed_features)
+df.select_dtypes(include=['number']).apply(lambda x: x.skew()).sort_values(ascending=False)
+print("\n📌 Recommendation:")
+for col, skew in skewed_features.items():
+if abs(skew) > 1:
+print(f"⚠ {col} is highly skewed (skew={skew:.2f}). Suggest: Apply log or sqrt transform.")
+elif abs(skew) > 0.5:
+print(f"ℹ {col} is moderately skewed (skew={skew:.2f}). Transform optional.")
+else:
+print(f"✅ {col} is fairly symmetric (skew={skew:.2f}). No action needed.")
+print("\n📦 Outlier Check (IQR Method):")
+for col in df.select_dtypes(include=['number']):
+Q1
+=
+df[col].quantile(0.25)
+Q3 df[ l] til (0 75)
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 1/9
+7/14/25, 11:16 AM Q3
+=
+df[col].quantile(0.75)
+IQR
+=
+Q3
+-
+Q1
+outlier_count
+=
+((df[col] < (Q1
+-
+1.5
+*
+IQR)) | (df[col] > (Q3
+if outlier_count > 0:
+print(f"⚠ {col}: {outlier_count} outliers detected.")
+carpricepredict.ipynb - Colab
++
+1.5
+*
+IQR))).sum()
+else:
+print(f"✅ {col}: No significant outliers.")
+#
+======
+6. Correlation Analysis
+======
+print("\n🔗 Correlation Matrix (Top correlated pairs):")
+correlation
+=
+df.corr(numeric_only=True)
+cor_matrix
+=
+correlation.abs().unstack().sort_values(ascending=False).drop_duplicates()
+top_corr
+=
+cor_matrix[(cor_matrix < 1) & (cor_matrix > 0.7)]
+print(top_corr)
+print("\n📌 Recommendation:")
+for (f1, f2), corr_val in top_corr.items():
+print(f"⚠ {f1} & {f2} have high correlation ({corr_val:.2f}). Suggest: Keep only one or apply dimensionality reduction (e.g., PCA).")
+plt.figure(figsize=(10, 6))
+sns.heatmap(correlation, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.show()
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 2/9
+7/14/25, 11:16 AM carpricepredict.ipynb - Colab
+Choose Files No file chosen Saving car_dataset.csv to car_dataset (4).csv
+📊 Dataset loaded: 301 rows × 9 columns
+Upload widget is only available when the cell has been executed in the current browser session. Please rerun this cell to enable.
+📋 Basic Info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 301 entries, 0 to 300
+Data columns (total 9 columns):
+# Column Non-Null Count Dtype
+--- ------ -------------- -----
+0 Car_Name 301 non-null object
+1 Year 301 non-null int64
+2 Selling_Price 301 non-null float64
+3 Present_Price 301 non-null float64
+4 Kms_Driven 301 non-null int64
+5 Fuel_Type 301 non-null object
+6 Seller_Type 301 non-null object
+7 Transmission 301 non-null object
+8 Owner 301 non-null int64
+dtypes: float64(2), int64(3), object(4)
+memory usage: 21.3+ KB
+None
+🔍 Missing Values:
+Series([], dtype: int64)
+🔍 Duplicate Rows:
+2
+📈 Skewness Check:
+Owner 7.616850
+Kms_Driven 6.436013
+Present_Price 4.083150
+Selling_Price 2.493422
+Year -1.246189
+dtype: float64
+📌 Recommendation:
+⚠ Owner is highly skewed (skew=7.62). Suggest: Apply log or sqrt transform.
+⚠ Kms_Driven is highly skewed (skew=6.44). Suggest: Apply log or sqrt transform.
+⚠ Present_Price is highly skewed (skew=4.08). Suggest: Apply log or sqrt transform.
+⚠ Selling_Price is highly skewed (skew=2.49). Suggest: Apply log or sqrt transform.
+⚠ Year is highly skewed (skew=-1.25). Suggest: Apply log or sqrt transform.
+📦 Outlier Check (IQR Method):
+⚠ Year: 7 outliers detected.
+⚠ Selling_Price: 17 outliers detected.
+⚠ Present_Price: 14 outliers detected.
+⚠ Kms_Driven: 8 outliers detected.
+⚠ Owner: 11 outliers detected.
+🔗 Correlation Matrix (Top correlated pairs):
+Present_Price Selling_Price 0.878983
+dtype: float64
+📌 Recommendation:
+⚠ Present_Price & Selling_Price have high correlation (0.88). Suggest: Keep only one or apply dimensionality reduction (e.g., PCA).
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 3/9
+7/14/25, 11:16 AM carpricepredict.ipynb - Colab
+df.head()
+Car_Name Year Selling_Price Present_Price Kms_Driven Fuel_Type Seller_Type Transmission Owner
+0 ritz 2014 3.35 5.59 27000 Petrol Dealer Manual 0
+1 sx4 2013 4.75 9.54 43000 Diesel Dealer Manual 0
+2 ciaz 2017 7.25 9.85 6900 Petrol Dealer Manual 0
+3 wagon r 2011 2.85 4.15 5200 Petrol Dealer Manual 0
+4 swift 2014 4.60 6.87 42450 Diesel Dealer Manual 0
+import pandas as pd
+def remove_outliers(df, column_name):
+Q1
+=
+df[column_name].quantile(0.25)
+Q3
+=
+df[column_name].quantile(0.75)
+IQR
+=
+Q3
+-
+Q1
+lower_bound
+=
+upper_bound
+=
+Q1
+Q3
+-
++
+1.5
+1.5
+*
+*
+IQR
+IQR
+filtered_df
+=
+return filtered_df
+df[(df[column_name] >= lower_bound) & (df[column_name] <= upper_bound)]
+df_filtered
+=
+remove_outliers(df, 'Year')
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 4/9
+7/14/25, 11:16 AM df_filtered
+df_filtered
+df_filtered
+df_filtered
+=
+remove_outliers(df_filtered, 'Selling_Price')
+=
+remove_outliers(df_filtered, 'Present_Price')
+=
+remove_outliers(df_filtered, 'Kms_Driven')
+=
+remove_outliers(df_filtered, 'Owner')
+print(f"Data after outliers are removed: {df_filtered.shape[0]} row")
+Data after outliers are removed: 261 row
+carpricepredict.ipynb - Colab
+df
+=
+df.drop_duplicates()
+df
+=
+df.drop(columns=['Car_Name'])
+df['Car_Age']
+=
+2025
+-
+df['Year']
+df
+=
+df.drop(columns=['Year'])
+import numpy as np
+df['Kms_Driven']
+=
+np.log1p(df['Kms_Driven'])
+df['Present_Price']
+=
+np.log1p(df['Present_Price'])
+df['Selling_Price']
+=
+np.log1p(df['Selling_Price'])
+df['Owner']
+=
+np.log1p(df['Owner'])
+df['Car_Age']
+=
+np.log1p(df['Car_Age'])
+df
+=
+pd.get_dummies(df, drop_first=True)
+from sklearn.model_selection import train_test_split
+X
+=
+y
+=
+df.drop(columns=['Selling_Price'])
+df['Selling_Price']
+X_train, X_test, y_train, y_test
+=
+train_test_split(X, y, test_size=0.2, random_state=42)
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+model
+=
+RandomForestRegressor()
+model.fit(X_train, y_train)
+y_pred
+=
+model.predict(X_test)
+print("R2 Score:", r2_score(y_test, y_pred))
+print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
+print("MAE:", mean_absolute_error(y_test, y_pred))
+print("MSE:", mean_squared_error(y_test, y_pred))
+R2 Score: 0.8566516530391135
+RMSE: 0.3059769709530725
+MAE: 0.16162909754487945
+MSE: 0.09362190675361738
+import matplotlib.pyplot as plt
+import seaborn as sns
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 5/9
+7/14/25, 11:16 AM carpricepredict.ipynb - Colab
+feature_importance
+=
+pd.Series(model.feature_importances_, index=X.columns)
+feature_importance.nlargest(10).plot(kind='barh')
+plt.title("Feature Importance")
+plt.show()
+import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+# Invers log transform (mengembalikan ke skala asli)
+y_test_orig
+=
+np.expm1(y_test) # np.expm1(x)
+=
+y_pred_orig
+=
+np.expm1(y_pred)
+exp(x)
+-
+1
+# Evaluation on Original Scale
+mae
+=
+mean_absolute_error(y_test_orig, y_pred_orig)
+mse
+=
+mean_squared_error(y_test_orig, y_pred_orig)
+rmse
+r2
+=
+np.sqrt(mse)
+=
+r2_score(y_test_orig, y_pred_orig)
+# print result
+print("🔍 Evaluation on Original Scale:")
+print("R2 Score:", r2)
+print("MAE:", mae)
+print("MSE:", mse)
+print("RMSE:", rmse)
+🔍 Evaluation on Original Scale:
+R2 Score: 0.684340001647687
+MAE: 1.2610902088309983
+MSE: 8.135587910600401
+RMSE: 2.8522952004658286
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 6/9
+7/14/25, 11:16 AM # Get user input for a new car
+print("\nEnter details for the new car:")
+car_name
+=
+input("Car Name:
+")
+year
+=
+int(input("Year:
+"))
+present_price
+=
+float(input("Present Price:
+"))
+kms_driven
+=
+int(input("Kms Driven:
+"))
+fuel_type
+=
+input("Fuel Type (Petrol, Diesel, CNG):
+")
+selling_type
+=
+input("Selling Type (Dealer, Individual):
+transmission
+=
+input("Transmission (Manual, Automatic):
+owner
+=
+int(input("Owner (0, 1, 3):
+"))
+# Create a DataFrame from user input
+new_car_data
+=
+pd.DataFrame({
+'Car_Name': [car_name],
+'Year': [year],
+'Present_Price': [present_price],
+'Kms_Driven': [kms_driven],
+'Fuel_Type': [fuel_type],
+'Selling_Type': [selling_type],
+'Transmission': [transmission],
+'Owner': [owner]
+carpricepredict.ipynb - Colab
+")
+")
+})
+# Apply the same preprocessing steps as the training data
+new_car_data['Car_Age']
+=
+2025
+-
+new_car_data['Year']
+new_car_data
+=
+new_car_data.drop(columns=['Year', 'Car_Name']) # Drop Year and Car_Name
+# Apply log transformations
+new_car_data['Kms_Driven']
+=
+np.log1p(new_car_data['Kms_Driven'])
+new_car_data['Present_Price']
+=
+np.log1p(new_car_data['Present_Price'])
+new_car_data['Owner']
+=
+np.log1p(new_car_data['Owner'])
+new_car_data['Car_Age']
+=
+np.log1p(new_car_data['Car_Age'])
+# Apply one-hot encoding
+new_car_data
+=
+pd.get_dummies(new_car_data)
+# Ensure all columns from training data are present, fill missing with 0
+for col in X_train.columns:
+if col not in new_car_data.columns:
+new_car_data[col]
+=
+0
+# Reorder columns to match training data
+new_car_data
+=
+new_car_data[X_train.columns]
+# Predict the price
+predicted_price_log
+=
+model.predict(new_car_data)
+# Inverse transform to original scale
+predicted_price_orig
+=
+np.expm1(predicted_price_log)
+# Display the predicted price
+print(f"\nPredicted Selling Price: {predicted_price_orig[0]:,.2f}"
+,"L")
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 7/9
+7/14/25, 11:16 AM carpricepredict.ipynb - Colab
+Enter details for the new car:
+Car Name: swift
+Year: 2018
+Present Price: 3.5
+Kms Driven: 50000
+Fuel Type (Petrol, Diesel, CNG): Petrol
+Selling Type (Dealer, Individual): Individual
+Transmission (Manual, Automatic): manual
+Owner (0, 1, 3): 1
+Predicted Selling Price: 2.86 L
+import seaborn as sns
+import matplotlib.pyplot as plt
+errors
+=
+y_test_orig
+-
+y_pred_orig
+sns.histplot(errors, kde=True)
+plt.title("Distribution Error (Selling_Price)")
+plt.xlabel("Error (y_true
+-
+y_pred)")
+plt.show()
+plt.figure(figsize=(8,6))
+plt.scatter(y_test_orig, y_pred_orig, alpha=0.7)
+plt.plot([0, max(y_test_orig)], [0, max(y_test_orig)], color='red', linestyle='--')
+plt.xlabel("Actual Selling Price")
+plt.ylabel("Predicted Selling Price")
+plt.title("Actual vs Predicted Selling Price")
+plt.show()
+https://colab.research.google.com/drive/1xiCnJZOMRaMct4wbe1OeAg0Q05yRl0VT#scrollTo=chwRin4
+_
+R47Z&printMode=true 8/9
+7/14/25, 11:16 AM carpricepredict.ipynb - Colab
